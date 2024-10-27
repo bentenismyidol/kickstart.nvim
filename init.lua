@@ -110,6 +110,9 @@ vim.opt.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
+-- Disable tabline
+vim.o.showtabline = 1 -- 0 to hide, 1 to show only when there are multiple tabs, 2 to always show
+
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
@@ -166,6 +169,23 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.diagnostic.config {
+  virtual_text = {
+    severity = {
+      min = vim.diagnostic.severity.ERROR, -- Show only errors (no warnings)
+    },
+  },
+  signs = {
+    severity = {
+      min = vim.diagnostic.severity.ERROR, -- Show signs only for errors
+    },
+  },
+  underline = {
+    severity = {
+      min = vim.diagnostic.severity.ERROR, -- Underline only errors
+    },
+  },
+}
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -189,6 +209,13 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+-- Keybinds to move between Tab
+-- Map Alt + Right Arrow to go to the next tab
+vim.keymap.set('n', '<A-Right>', 'gt', { noremap = true, silent = true })
+
+-- Map Alt + Left Arrow to go to the previous tab
+vim.keymap.set('n', '<A-Left>', 'gT', { noremap = true, silent = true })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -225,6 +252,7 @@ vim.opt.rtp:prepend(lazypath)
 --
 --  To update plugins you can run
 --    :Lazy update
+--
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
@@ -608,7 +636,7 @@ require('lazy').setup({
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -829,16 +857,35 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+    -- 'folke/tokyonight.nvim',
+    -- priority = 1000, -- Make sure to load this before all the other start plugins.
+    -- init = function()
+    --   -- Load the colorscheme here.
+    --   -- Like many other themes, this one has different styles, and you could load
+    --   -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+    --   vim.cmd.colorscheme 'tokyonight-night'
+    --
+    --   -- You can configure highlights by doing something like:
+    --   vim.cmd.hi 'Comment gui=none'
+    -- end,
+    -- 'rose-pine/neovim',
+    -- priority = 1000,
+    -- init = function()
+    --   -- Load the colorscheme
+    --   vim.cmd.colorscheme 'rose-pine' -- Change to rose-pine
+    --
+    --   -- You can customize highlights as needed
+    --   vim.cmd.hi 'Comment gui=none'
+    -- end,
 
-      -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
+    'doums/darcula',
+    lazy = false, -- load during startup
+    priority = 1000, -- load this before other plugins
+    config = function()
+      -- Enable true color support
+      vim.opt.termguicolors = true
+      -- Set the colorscheme
+      vim.cmd.colorscheme 'darcula'
     end,
   },
 
@@ -918,9 +965,9 @@ require('lazy').setup({
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
