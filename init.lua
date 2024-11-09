@@ -132,7 +132,10 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
 -- Keep signcolumn on by default
-vim.opt.signcolumn = 'yes'
+vim.opt.signcolumn = 'no'
+
+-- Keep signcolumn on by default
+vim.opt.numberwidth = 1
 
 -- Decrease update time
 vim.opt.updatetime = 250
@@ -184,6 +187,13 @@ vim.diagnostic.config {
     severity = {
       min = vim.diagnostic.severity.ERROR, -- Underline only errors
     },
+  },
+  float = {
+    border = 'rounded',
+    source = 'always',
+    header = '',
+    prefix = '',
+    max_width = 60,
   },
 }
 
@@ -637,6 +647,7 @@ require('lazy').setup({
         -- gopls = {},
         -- pyright = {},
         rust_analyzer = {},
+        ts_ls = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -731,7 +742,7 @@ require('lazy').setup({
         -- python = { "isort", "black" },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },
@@ -771,7 +782,15 @@ require('lazy').setup({
       --  into multiple repos for maintenance purposes.
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
+      'saecki/crates.nvim', -- Rust crates autocompletion
+      'David-Kunz/cmp-npm', -- npm autocompletion
+      -- For npm completion in package.json
+      -- require('cmp-npm').setup { only_in_package_json = true },
+      --
+      -- -- For Rust crates autocompletion in Cargo.toml
+      -- require('crates').setup(),
     },
+
     config = function()
       -- See `:help cmp`
       local cmp = require 'cmp'
@@ -954,6 +973,23 @@ require('lazy').setup({
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
+  {
+    'windwp/nvim-ts-autotag',
+    opts = {
+      -- Defaults
+      enable_close = true, -- Auto close tags
+      enable_rename = true, -- Auto rename pairs of tags
+      enable_close_on_slash = true, -- Auto close on trailing </
+    },
+    -- Also override individual filetype configs, these take priority.
+    -- Empty by default, useful if one of the "opts" global settings
+    -- doesn't work well in a specific filetype
+    per_filetype = {
+      ['html'] = {
+        enable_close = true,
+      },
+    },
+  },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
@@ -965,7 +1001,7 @@ require('lazy').setup({
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   -- require 'kickstart.plugins.debug',
-  require 'kickstart.plugins.indent_line',
+  -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
