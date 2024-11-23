@@ -23,6 +23,7 @@ return {
 
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
+    'jonboh/nvim-dap-rr',
   },
   keys = function(_, keys)
     local dap = require 'dap'
