@@ -23,7 +23,6 @@ return {
 
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
-    'jonboh/nvim-dap-rr',
   },
   keys = function(_, keys)
     local dap = require 'dap'
@@ -94,6 +93,43 @@ return {
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
+    -- local rt = require 'rust-tools'
+    -- local mason_registry = require 'mason-registry'
+    --
+    -- local codelldb = mason_registry.get_package 'codelldb'
+    -- local extension_path = codelldb:get_install_path() .. '/extension/'
+    -- local codelldb_path = extension_path .. '/adapter/codelldb'
+    --
+    -- rt.setup {
+    --   server = {
+    --     capabilities = require('cmp_nvim_lsp').default_capabilities(),
+    --     on_attach = function(_, bufnr) end,
+    --   },
+    -- }
+    -- dap.adapters.codelldb = {
+    --   type = 'server',
+    --   port = '${port}',
+    --   executable = {
+    --     -- Change this to your path!
+    --     command = '/home/kurotych/Sources/lldb/extension/adapter/codelldb',
+    --     args = { '--port', '${port}' },
+    --   },
+    -- }
+    --
+    -- dap.configurations.rust = {
+    --   {
+    --     name = 'Launch file',
+    --     type = 'codelldb',
+    --     request = 'launch',
+    --     program = function()
+    --       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    --     end,
+    --     cwd = '${workspaceFolder}',
+    --     stopOnEntry = false,
+    --   },
+    -- }
+    --
+    require('dapui').setup {}
     -- Install golang specific config
     require('dap-go').setup {
       delve = {

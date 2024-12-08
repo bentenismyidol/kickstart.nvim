@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -293,7 +293,10 @@ require('lazy').setup({
       },
     },
   },
-
+  -- {
+  --   'simrat39/rust-tools.nvim',
+  -- },
+  --
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -474,8 +477,7 @@ require('lazy').setup({
       end, { desc = '[S]earch [N]eovim files' })
     end,
   },
-
-  -- LSP Plugins
+  -- -- LSP Plugins
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
@@ -648,6 +650,7 @@ require('lazy').setup({
         -- pyright = {},
         rust_analyzer = {},
         ts_ls = {},
+
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -876,30 +879,21 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    -- 'folke/tokyonight.nvim',
-    -- priority = 1000, -- Make sure to load this before all the other start plugins.
-    -- init = function()
-    --   -- Load the colorscheme here.
-    --   -- Like many other themes, this one has different styles, and you could load
-    --   -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-    --   vim.cmd.colorscheme 'tokyonight-night'
-    --
-    --   -- You can configure highlights by doing something like:
-    --   vim.cmd.hi 'Comment gui=none'
-    -- end,
-    -- 'rose-pine/neovim',
-    -- priority = 1000,
-    -- init = function()
-    --   -- Load the colorscheme
-    --   vim.cmd.colorscheme 'rose-pine' -- Change to rose-pine
-    --
-    --   -- You can customize highlights as needed
-    --   vim.cmd.hi 'Comment gui=none'
-    -- end,
+    'folke/tokyonight.nvim',
+    priority = 1000, -- Make sure to load this before all the other start plugins.
+    init = function()
+      -- Load the colorscheme here.
+      -- Like many other themes, this one has different styles, and you could load
+      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+      -- vim.cmd.colorscheme 'tokyonight-night'
 
+      -- You can configure highlights by doing something like:
+      vim.cmd.hi 'Comment gui=none'
+    end,
+  },
+  {
     'doums/darcula',
-    lazy = false, -- load during startup
-    priority = 1000, -- load this before other plugins
+    priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
       -- Enable true color support
       vim.opt.termguicolors = true
@@ -907,7 +901,34 @@ require('lazy').setup({
       vim.cmd.colorscheme 'darcula'
     end,
   },
+  {
+    'rose-pine/neovim',
+    priority = 1000, -- Make sure to load this before all the other start plugins.
+    init = function()
+      -- Load the colorscheme
+      -- vim.cmd.colorscheme 'rose-pine' -- Change to rose-pine
 
+      -- You can customize highlights as needed
+      vim.cmd.hi 'Comment gui=none'
+    end,
+  },
+  {
+    'ellisonleao/gruvbox.nvim',
+    priority = 1000,
+    config = true,
+    opts = ...,
+    config = function()
+      -- vim.cmd.colorscheme 'gruvbox'
+    end,
+  },
+  {
+    'Yazeed1s/minimal.nvim',
+    config = function()
+      vim.g.minimal_italic_functions = true
+      vim.g.minimal_italic_comments = false
+    end,
+    -- for minimal
+  },
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
