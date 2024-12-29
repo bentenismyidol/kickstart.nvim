@@ -477,6 +477,7 @@ require('lazy').setup({
       end, { desc = '[S]earch [N]eovim files' })
     end,
   },
+
   -- -- LSP Plugins
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
@@ -880,7 +881,7 @@ require('lazy').setup({
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
     'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
+    -- priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
@@ -894,16 +895,28 @@ require('lazy').setup({
   {
     'doums/darcula',
     priority = 1000, -- Make sure to load this before all the other start plugins.
-    config = function()
+
+    init = function()
       -- Enable true color support
       vim.opt.termguicolors = true
       -- Set the colorscheme
       vim.cmd.colorscheme 'darcula'
+
+      vim.g.lightline = { colorscheme = 'darculaOriginal' }
+
+      vim.api.nvim_set_hl(0, '@lsp.type.typeParameter', { ctermfg = 37, fg = '#20999D' })
+      vim.api.nvim_set_hl(0, '@operator', { ctermfg = 172, fg = '#cc7832' })
+      vim.api.nvim_set_hl(0, '@punctuation', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6', bg = '#2b2b2b' })
+      vim.api.nvim_set_hl(0, '@module', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6', bg = '#2b2b2b' })
+      vim.api.nvim_set_hl(0, '@lsp.type.class', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6', bg = '#2b2b2b' })
+      vim.api.nvim_set_hl(0, '@lsp.type.struct', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6', bg = '#2b2b2b' })
+      vim.api.nvim_set_hl(0, '@lsp.type.interface', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6', bg = '#2b2b2b' })
+      -- [[highlight rustLifetime ctermbg=italic ctermfg=37 guibg=italic guifc=#20999d]]
     end,
   },
   {
     'rose-pine/neovim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
+    -- priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme
       -- vim.cmd.colorscheme 'rose-pine' -- Change to rose-pine
@@ -914,8 +927,7 @@ require('lazy').setup({
   },
   {
     'ellisonleao/gruvbox.nvim',
-    priority = 1000,
-    config = true,
+    -- priority = 1000,
     opts = ...,
     config = function()
       -- vim.cmd.colorscheme 'gruvbox'
@@ -923,7 +935,7 @@ require('lazy').setup({
   },
   {
     'Yazeed1s/minimal.nvim',
-    config = function()
+    init = function()
       vim.g.minimal_italic_functions = true
       vim.g.minimal_italic_comments = false
     end,
