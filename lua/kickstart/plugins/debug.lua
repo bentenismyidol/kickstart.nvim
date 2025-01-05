@@ -88,47 +88,66 @@ return {
         },
       },
     }
+    dap.adapters.codelldb = {
+      type = 'executable',
+      command = 'codelldb', -- or if not in $PATH: "/absolute/path/to/codelldb"
 
+      -- On windows you may have to uncomment this:
+      -- detached = false,
+    }
+    dap.configurations.cpp = {
+      {
+        name = 'Launch',
+        type = 'lldb',
+        request = 'launch',
+        program = function()
+          return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+        args = {},
+
+        -- 💀
+        -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
+        --
+        --    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+        --
+        -- Otherwise you might get the following error:
+        --
+        --    Error on launch: Failed to attach to the target process
+        --
+        -- But you should be aware of the implications:
+        -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
+        -- runInTerminal = false,
+      },
+    }
+
+    dap.adapters.coreclr = {
+      type = 'executable',
+      command = '/home/nguyen-viet-thanh/.local/share/nvim/mason/packages/netcoredbg/netcoredbg',
+      args = { '--interpreter=vscode' },
+    }
+
+    dap.configurations.cs = {
+      {
+        type = 'coreclr',
+        name = 'launch - netcoredbg',
+        request = 'launch',
+        program = function()
+          return vim.fn.input('Path to dll', vim.fn.getcwd() .. '/home/nguyen-viet-thanh/DotNETprojects/first-dotnet/bin/Debug/net8.0/', 'file')
+        end,
+      },
+    }
+    dap.configurations.c = dap.configurations.cpp
+    dap.configurations.rust = dap.configurations.cpp
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-    -- local rt = require 'rust-tools'
-    -- local mason_registry = require 'mason-registry'
-    --
-    -- local codelldb = mason_registry.get_package 'codelldb'
-    -- local extension_path = codelldb:get_install_path() .. '/extension/'
-    -- local codelldb_path = extension_path .. '/adapter/codelldb'
-    --
-    -- rt.setup {
-    --   server = {
-    --     capabilities = require('cmp_nvim_lsp').default_capabilities(),
-    --     on_attach = function(_, bufnr) end,
-    --   },
-    -- }
-    -- dap.adapters.codelldb = {
-    --   type = 'server',
-    --   port = '${port}',
-    --   executable = {
-    --     -- Change this to your path!
-    --     command = '/home/kurotych/Sources/lldb/extension/adapter/codelldb',
-    --     args = { '--port', '${port}' },
-    --   },
-    -- }
-    --
-    -- dap.configurations.rust = {
-    --   {
-    --     name = 'Launch file',
-    --     type = 'codelldb',
-    --     request = 'launch',
-    --     program = function()
-    --       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-    --     end,
-    --     cwd = '${workspaceFolder}',
-    --     stopOnEntry = false,
-    --   },
-    -- }
-    --
+    vim.fn.sign_define('DapBreakpoint', { text = '●', texthl = 'Error', linehl = '', numhl = '' })
+    vim.fn.sign_define('DapBreakpointCondition', { text = '◆', texthl = 'WarningMsg', linehl = '', numhl = '' })
+    vim.fn.sign_define('DapLogPoint', { text = '■', texthl = 'Question', linehl = '', numhl = '' })
+    vim.fn.sign_define('DapStopped', { text = '▶', texthl = 'Search', linehl = 'Visual', numhl = '' })
     require('dapui').setup {}
     -- Install golang specific config
     require('dap-go').setup {

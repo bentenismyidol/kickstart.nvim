@@ -112,7 +112,12 @@ vim.opt.showmode = false
 
 -- Disable tabline
 vim.o.showtabline = 1 -- 0 to hide, 1 to show only when there are multiple tabs, 2 to always show
-
+-- vim.o.expandtab = true      -- Use spaces instead of tabs
+-- vim.o.tabstop = 2           -- Number of spaces per tab
+-- vim.o.shiftwidth = 2        -- Number of spaces to use for each indentation level
+-- vim.o.smartindent = true    -- Smart auto-indenting
+-- vim.o.autoindent = true     -- Copy indent from current line when starting a new line
+-- vim.o.softtabstop = 2       -- Backspace over spaces like a tab
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
@@ -130,7 +135,7 @@ vim.opt.undofile = true
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
-
+vim.opt.shiftwidth = 4
 -- Keep signcolumn on by default
 vim.opt.signcolumn = 'no'
 
@@ -151,8 +156,8 @@ vim.opt.splitbelow = true
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
-vim.opt.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.opt.list = false
+vim.opt.listchars = { tab = '>> ', trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
@@ -491,6 +496,35 @@ require('lazy').setup({
       },
     },
   },
+
+  {
+    'danarth/sonarlint.nvim',
+    requires = {
+      'neovim/nvim-lspconfig',
+      'williamboman/mason.nvim',
+      'williamboman/mason-lspconfig.nvim',
+    },
+  },
+  {
+    'MoaidHathot/dotnet.nvim',
+    -- enabled = false,
+    branch = 'dev',
+    cmd = 'DotnetUI',
+    keys = {
+      { '<leader>/', mode = { 'n', 'v' } },
+      { '<leader>na', '<cmd>:DotnetUI new_item<CR>', { desc = '.NET new item', silent = true } },
+      { '<leader>nb', '<cmd>:DotnetUI file bootstrap<CR>', { desc = '.NET bootstrap class', silent = true } },
+      { '<leader>nra', '<cmd>:DotnetUI project reference add<CR>', { desc = '.NET add project reference', silent = true } },
+      { '<leader>nrr', '<cmd>:DotnetUI project reference remove<CR>', { desc = '.NET remove project reference', silent = true } },
+      { '<leader>npa', '<cmd>:DotnetUI project package add<CR>', { desc = '.NET ada project package', silent = true } },
+      { '<leader>npr', '<cmd>:DotnetUI project package remove<CR>', { desc = '.NET remove project package', silent = true } },
+    },
+    opts = {
+      -- project_selection = {
+      -- 	path_display = 'filename_first',
+      -- }
+    },
+  },
   { 'Bilal2453/luvit-meta', lazy = true },
   {
     -- Main LSP Configuration
@@ -651,7 +685,8 @@ require('lazy').setup({
         -- pyright = {},
         rust_analyzer = {},
         ts_ls = {},
-
+        jdtls = {},
+        -- sonarlint = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -676,7 +711,39 @@ require('lazy').setup({
           },
         },
       }
-
+      require('sonarlint').setup {
+        server = {
+          cmd = {
+            'sonarlint-language-server',
+            -- Ensure that sonarlint-language-server uses stdio channel
+            '-stdio',
+            '-analyzers',
+            -- paths to the analyzers you need, using those for python and java in this example
+            vim.fn.expand '$MASON/share/sonarlint-analyzers/sonarpython.jar',
+            vim.fn.expand '$MASON/share/sonarlint-analyzers/sonarcfamily.jar',
+            vim.fn.expand '$MASON/share/sonarlint-analyzers/sonarjava.jar',
+          },
+          -- All settings are optional
+          settings = {
+            -- The default for sonarlint is {}, this is just an example
+            sonarlint = {
+              rules = {
+                ['typescript:S101'] = { level = 'on', parameters = { format = '^[A-Z][a-zA-Z0-9]*$' } },
+                ['typescript:S103'] = { level = 'on', parameters = { maximumLineLength = 180 } },
+                ['typescript:S106'] = { level = 'on' },
+                ['typescript:S107'] = { level = 'on', parameters = { maximumFunctionParameters = 7 } },
+              },
+            },
+          },
+        },
+        filetypes = {
+          -- Tested and working
+          'python',
+          'cpp',
+          -- -- Requires nvim-jdtls, otherwise an error message will be printed
+          -- 'java',
+        },
+      }
       -- Ensure the servers and tools above are installed
       --  To check the current status of installed tools and/or manually install
       --  other tools, you can run
@@ -809,7 +876,6 @@ require('lazy').setup({
         },
         completion = { completeopt = 'menu,menuone,noinsert' },
 
-        -- For an understanding of why these mappings were
         -- chosen, you will need to read `:help ins-completion`
         --
         -- No, but seriously. Please read `:help ins-completion`, it is really good!
@@ -906,12 +972,11 @@ require('lazy').setup({
 
       vim.api.nvim_set_hl(0, '@lsp.type.typeParameter', { ctermfg = 37, fg = '#20999D' })
       vim.api.nvim_set_hl(0, '@operator', { ctermfg = 172, fg = '#cc7832' })
-      vim.api.nvim_set_hl(0, '@punctuation', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6', bg = '#2b2b2b' })
-      vim.api.nvim_set_hl(0, '@module', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6', bg = '#2b2b2b' })
-      vim.api.nvim_set_hl(0, '@lsp.type.class', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6', bg = '#2b2b2b' })
-      vim.api.nvim_set_hl(0, '@lsp.type.struct', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6', bg = '#2b2b2b' })
-      vim.api.nvim_set_hl(0, '@lsp.type.interface', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6', bg = '#2b2b2b' })
-      -- [[highlight rustLifetime ctermbg=italic ctermfg=37 guibg=italic guifc=#20999d]]
+      vim.api.nvim_set_hl(0, '@punctuation', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6' })
+      vim.api.nvim_set_hl(0, '@module', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6' })
+      vim.api.nvim_set_hl(0, '@lsp.type.class', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6' })
+      vim.api.nvim_set_hl(0, '@lsp.type.struct', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6' })
+      vim.api.nvim_set_hl(0, '@lsp.type.interface', { ctermbg = 235, ctermfg = 145, fg = '#a9b7c6' })
     end,
   },
   {
@@ -997,7 +1062,7 @@ require('lazy').setup({
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
         additional_vim_regex_highlighting = { 'ruby' },
       },
-      indent = { enable = true, disable = { 'ruby' } },
+      indent = { enable = true, disable = { 'ruby', 'c' } },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
@@ -1037,7 +1102,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
