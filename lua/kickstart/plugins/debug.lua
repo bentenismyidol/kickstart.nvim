@@ -90,7 +90,7 @@ return {
     }
     dap.adapters.codelldb = {
       type = 'executable',
-      command = 'codelldb', -- or if not in $PATH: "/absolute/path/to/codelldb"
+      command = '/home/nguyen-viet-thanh/.local/share/nvim/mason/packages/codelldb',
 
       -- On windows you may have to uncomment this:
       -- detached = false,
@@ -134,10 +134,14 @@ return {
         name = 'launch - netcoredbg',
         request = 'launch',
         program = function()
-          return vim.fn.input('Path to dll', vim.fn.getcwd() .. '/home/nguyen-viet-thanh/DotNETprojects/first-dotnet/bin/Debug/net8.0/', 'file')
+          -- This will look for the dll in the standard .NET Core output directory
+          return vim.fn.input('Path to dll', vim.fn.getcwd() .. '/bin/Debug/net8.0/', 'file')
         end,
+        cwd = '${workspaceFolder}',
+        console = 'integratedTerminal',
       },
     }
+
     dap.configurations.c = dap.configurations.cpp
     dap.configurations.rust = dap.configurations.cpp
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
